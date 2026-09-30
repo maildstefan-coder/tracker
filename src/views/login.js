@@ -15,7 +15,11 @@ export function renderLogin(root, { state, actions, run }) {
         <div class="login-form">
           <h2>Anmelden</h2>
           ${state.error ? `<p class="form-error" role="alert">${esc(state.error)}</p>` : ''}
-          <button class="btn btn-github" data-action="github">${icons.github}<span>Mit GitHub anmelden</span></button>
+          <div class="oauth">
+            <button class="btn btn-oauth" data-provider="google">${icons.google}<span>Mit Google anmelden</span></button>
+            <button class="btn btn-oauth" data-provider="azure">${icons.microsoft}<span>Mit Microsoft anmelden</span></button>
+            <button class="btn btn-oauth" data-provider="github">${icons.github}<span>Mit GitHub anmelden</span></button>
+          </div>
           <div class="divider"><span>oder per E-Mail</span></div>
           ${
             sent
@@ -23,7 +27,7 @@ export function renderLogin(root, { state, actions, run }) {
                  <button class="btn btn-ghost" data-action="again">Andere Adresse verwenden</button>`
               : `<form class="stack" data-form="email" novalidate>
                    <label for="login-email">E-Mail-Adresse</label>
-                   <input id="login-email" type="email" autocomplete="email" required placeholder="name@beispiel.ch" />
+                   <input id="login-email" class="input" type="email" autocomplete="email" required placeholder="name@beispiel.ch" />
                    <button class="btn btn-primary" type="submit">Anmeldelink senden</button>
                  </form>`
           }
@@ -31,7 +35,9 @@ export function renderLogin(root, { state, actions, run }) {
       </section>
     </div>`;
 
-  root.querySelector('[data-action="github"]').addEventListener('click', () => run(actions.signInWithGithub));
+  root.querySelectorAll('[data-provider]').forEach((btn) =>
+    btn.addEventListener('click', () => run(actions.signInWithProvider, btn.dataset.provider)),
+  );
   root.querySelector('[data-action="again"]')?.addEventListener('click', () => {
     state.loginSentTo = '';
     renderLogin(root, { state, actions, run });

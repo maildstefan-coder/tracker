@@ -185,8 +185,8 @@ function resetUserState() {
 
 // ---- Actions ----------------------------------------------------------
 const actions = {
-  async signInWithGithub() {
-    await api.signInWithGithub();
+  async signInWithProvider(provider) {
+    await api.signInWithProvider(provider);
   },
   async signInWithEmail(email) {
     await api.signInWithEmail(email);

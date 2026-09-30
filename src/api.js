@@ -9,8 +9,20 @@ function unwrap({ data, error }) {
 export async function getSession() {
   return unwrap(await supabase.auth.getSession()).session;
 }
-export async function signInWithGithub() {
-  unwrap(await supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: appUrl() } }));
+const PROVIDER_OPTIONS = {
+  github: {},
+  google: {},
+  // Azure only returns the email address when it is requested explicitly.
+  azure: { scopes: 'email' },
+};
+export async function signInWithProvider(provider) {
+  if (!PROVIDER_OPTIONS[provider]) throw new Error(`Unbekannter Anbieter: ${provider}`);
+  unwrap(
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: appUrl(), ...PROVIDER_OPTIONS[provider] },
+    }),
+  );
 }
 export async function signInWithEmail(email) {
   unwrap(await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: appUrl() } }));
